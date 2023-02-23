@@ -33,30 +33,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3 # check out this repo
 
-      - uses: actions/checkout@v3 # check out automation repo
-        with:
-          repository: vrchat-community/package-list-action
-          path: ${{env.pathToCi}}/package-list-action
-          clean: false # otherwise the local repo will no longer be checked out
-
-      - uses: actions/checkout@v3
+      - name: m-hayabusa/vpm-repo
+        uses: actions/checkout@v3
         with:
           repository: m-hayabusa/vpm-repo
           path: ${{env.pathToCi}}/vpm-repo
           clean: false
-
-      - name: Restore Cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ${{env.pathToCi}}/package-list-action/.nuke/temp
-            ~/.nuget/packages
-          key: ${{ runner.os }}-${{ hashFiles('**/global.json', '**/*.csproj') }}
-
-      - name: Build Package Version Listing
-        run: ${{env.pathToCi}}/package-list-action/build.cmd BuildRepoListing --root ${{env.pathToCi}}/package-list-action --list-publish-directory $GITHUB_WORKSPACE/${{env.listPublishDirectory}}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - uses: actions/setup-node@v3
         with:
@@ -66,9 +48,14 @@ jobs:
         run: >
           node -e '
             const fs = require("fs");
-            const newpkg = JSON.parse(fs.readFileSync("${{github.workspace}}/${{env.listPublishDirectory}}/index.json"));
+
+            const package = JSON.parse(fs.readFileSync("./package.json"));
             const basepkg = JSON.parse(fs.readFileSync("${{env.pathToCi}}/vpm-repo/index.json"));
-            basepkg.packages[Object.keys(newpkg.packages)[0]] = newpkg.packages[Object.keys(newpkg.packages)[0]];
+
+            if (basepkg.packages[package.name] === undefined) basepkg.packages[package.name] = {};
+            if (basepkg.packages[package.name].versions === undefined) basepkg.packages[package.name].versions = {};
+            basepkg.packages[package.name].versions[package.version] = package;
+
             fs.writeFileSync("${{env.pathToCi}}/vpm-repo/index.json", JSON.stringify(basepkg, undefined, "    "));
           '
 
@@ -76,12 +63,9 @@ jobs:
         run: >
           node -e '
             const fs = require("fs");
-            const newpkg = JSON.parse(fs.readFileSync("${{github.workspace}}/${{env.listPublishDirectory}}/index.json"));
-            const name = Object.keys(newpkg.packages)[0];
-            const version = Object.keys(newpkg.packages[name].versions)[0];
-            const displayName = newpkg.packages[name].versions[version].displayName;
-            console.log("package_version=" + version);
-            console.log("package_displayName=" + displayName);
+            const package = JSON.parse(fs.readFileSync("./package.json"));
+            console.log("package_version=" + package.versions);
+            console.log("package_displayName=" + package.displayName);
           ' >> $GITHUB_ENV
 
       - name: Pushes to another repository
