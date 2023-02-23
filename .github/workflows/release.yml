@@ -32,7 +32,7 @@ jobs:
         with:
           type: "zip"
           directory: "."
-          filename: "../../${{env.zipFile}}" # make the zip file two directories up, since we start two directories in above
+          filename: "${{ env.zipFile }}"
 
       - run: find . -name \*.meta >> metaList
 
