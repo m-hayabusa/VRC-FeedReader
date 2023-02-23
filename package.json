@@ -1,0 +1,19 @@
+{
+  "name": "studio.nekomimi.feedreader",
+  "displayName": "nS feedParser",
+  "version": "0.1.0",
+  "description": "parse RSS / Atom Feed",
+  "gitDependencies": {},
+  "vpmDependencies": {
+    "com.vrchat.udonsharp": "1.1.6",
+    "studio.nekomimi.udonxml": "0.2.0"
+  },
+  "license": "MIT",
+  "legacyFolders": {},
+  "legacyFiles": {},
+  "author": {
+    "name": "mewl hayabusa",
+    "email": "mewl@mewl.me",
+    "url": "https://nekomimi.studio"
+  }
+}
