@@ -6,10 +6,12 @@ using UdonSharp;
 
 namespace nekomimiStudio.feedReader
 {
-    public class feedReader : UdonSharpBehaviour
+    public class feedReader : UdonXML_Callback
     {
         private UdonXML udonXml;
         public VRCUrl[] FeedURL;
+
+        private object[] errorlog = new object[0];
 
         private string[][][][] res;
         /*
@@ -59,21 +61,37 @@ namespace nekomimiStudio.feedReader
             }
         }
 
-        public override void OnStringLoadSuccess(IVRCStringDownload stringDownload)
+        public override void OnStringLoadSuccess(IVRCStringDownload result)
         {
-            Debug.Log(stringDownload.Result);
-            var root = udonXml.LoadXml(stringDownload.Result);
-            var content = udonXml.GetChildNode(root, 1);
+            Debug.Log(result.Result);
+            udonXml.LoadXmlCallback(result.Result, this, this.GetInstanceID() + "_" + loadingIttr);
+        }
+
+        public override void OnStringLoadError(IVRCStringDownload result)
+        {
+            var err = new object[errorlog.Length + 1];
+            System.Array.Copy(errorlog, err, errorlog.Length);
+            err[err.Length - 1] = result;
+            errorlog = err;
+        }
+
+        public override void OnUdonXMLParseEnd(object[] data, string callbackId)
+        {
+            Debug.Log(callbackId);
+            var id = callbackId.Split('_');
+            var ittr = int.Parse(id[id.Length - 1]);
+
+            var content = udonXml.GetChildNode(data, 1);
             switch (udonXml.GetNodeName(content))
             {
                 case "rdf:RDF":
-                    parseRSS1(loadingIttr, content);
+                    parseRSS1(ittr, content);
                     break;
                 case "rss":
-                    parseRSS2(loadingIttr, content);
+                    parseRSS2(ittr, content);
                     break;
                 case "feed":
-                    parseAtom(loadingIttr, content);
+                    parseAtom(ittr, content);
                     break;
             }
         }
@@ -211,6 +229,15 @@ namespace nekomimiStudio.feedReader
             return done && loadingIttr >= FeedURL.Length;
         }
 
+        // IVRCStringDownload[] -> TypeResolverException: Type referenced by 'VRCSDK3StringLoadingIVRCStringDownloadArray' could not be resolved. 
+        public object[] errors()
+        {
+            return errorlog;
+        }
+        public IVRCStringDownload error()
+        {
+            return (IVRCStringDownload)errorlog[0];
+        }
         public int getFeedLength()
         {
             return res.Length;
