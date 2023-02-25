@@ -236,7 +236,8 @@ namespace nekomimiStudio.feedReader
         }
         public IVRCStringDownload error()
         {
-            return (IVRCStringDownload)errorlog[0];
+            if (errorlog.Length == 0) return null;
+            return (IVRCStringDownload)errorlog[errorlog.Length - 1];
         }
         public int getFeedLength()
         {
