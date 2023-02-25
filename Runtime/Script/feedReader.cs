@@ -49,7 +49,7 @@ namespace nekomimiStudio.feedReader
         public void Start()
         {
             res = new string[FeedURL.Length][][][];
-            udonXml = this.GetComponent<UdonXML>();
+            udonXml = this.GetComponentInChildren<UdonXML>();
         }
 
         public void Update()
