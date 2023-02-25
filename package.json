@@ -1,8 +1,12 @@
 {
   "name": "studio.nekomimi.feedreader",
-  "displayName": "nS feedParser",
-  "version": "0.1.0",
+  "displayName": "nS feedReader",
+  "version": "0.1.1",
   "description": "parse RSS / Atom Feed",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/m-hayabusa/VRC-FeedReader.git"
+  },
   "gitDependencies": {},
   "vpmDependencies": {
     "com.vrchat.udonsharp": "1.1.6",
