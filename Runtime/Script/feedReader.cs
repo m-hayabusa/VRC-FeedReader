@@ -1,8 +1,7 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UdonXMLParser;
 using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
-using UdonSharp;
 
 namespace nekomimiStudio.feedReader
 {
@@ -43,8 +42,9 @@ namespace nekomimiStudio.feedReader
             }
         */
 
-        private int loadingIttr = 0;
-        private bool done = true;
+        private bool strDone = true;
+        private int strLoadIttr = 0;
+        private bool done = false;
 
         public void Start()
         {
@@ -54,17 +54,20 @@ namespace nekomimiStudio.feedReader
 
         public void Update()
         {
-            if (done && loadingIttr < FeedURL.Length)
+            if (strDone && strLoadIttr < FeedURL.Length)
             {
+                strDone = false;
                 done = false;
-                VRCStringDownloader.LoadUrl(FeedURL[loadingIttr], (VRC.Udon.Common.Interfaces.IUdonEventReceiver)this);
+                VRCStringDownloader.LoadUrl(FeedURL[strLoadIttr], (VRC.Udon.Common.Interfaces.IUdonEventReceiver)this);
             }
         }
 
         public override void OnStringLoadSuccess(IVRCStringDownload result)
         {
             Debug.Log(result.Result);
-            udonXml.LoadXmlCallback(result.Result, this, this.GetInstanceID() + "_" + loadingIttr);
+            udonXml.LoadXmlCallback(result.Result, this, this.GetInstanceID() + "_" + strLoadIttr);
+            strLoadIttr++;
+            strDone = true;
         }
 
         public override void OnStringLoadError(IVRCStringDownload result)
@@ -73,6 +76,9 @@ namespace nekomimiStudio.feedReader
             System.Array.Copy(errorlog, err, errorlog.Length);
             err[err.Length - 1] = result;
             errorlog = err;
+            strLoadIttr++;
+            strDone = true;
+            done = true;
         }
 
         public override void OnUdonXMLParseEnd(object[] data, string callbackId)
@@ -85,21 +91,21 @@ namespace nekomimiStudio.feedReader
             for (int i = 0; i < udonXml.GetChildNodesCount(data) && !found; i++)
             {
                 var content = udonXml.GetChildNode(data, i);
-            switch (udonXml.GetNodeName(content))
-            {
-                case "rdf:RDF":
-                    parseRSS1(ittr, content);
+                switch (udonXml.GetNodeName(content))
+                {
+                    case "rdf:RDF":
+                        parseRSS1(ittr, content);
                         found = true;
-                    break;
-                case "rss":
-                    parseRSS2(ittr, content);
+                        break;
+                    case "rss":
+                        parseRSS2(ittr, content);
                         found = true;
-                    break;
-                case "feed":
-                    parseAtom(ittr, content);
+                        break;
+                    case "feed":
+                        parseAtom(ittr, content);
                         found = true;
-                    break;
-            }
+                        break;
+                }
             }
             if (!found) Debug.LogWarning("RSS / Atom start tag not found");
         }
@@ -148,7 +154,6 @@ namespace nekomimiStudio.feedReader
             System.Array.Copy(entries, res[feedNum][1], cnt);
 
             done = true;
-            loadingIttr++;
         }
 
         private void parseRSS2(int feedNum, object contentRoot)
@@ -189,7 +194,6 @@ namespace nekomimiStudio.feedReader
             System.Array.Copy(entries, res[feedNum][1], cnt);
 
             done = true;
-            loadingIttr++;
         }
 
         private void parseAtom(int feedNum, object contentRoot)
@@ -229,12 +233,11 @@ namespace nekomimiStudio.feedReader
             System.Array.Copy(entries, res[feedNum][1], cnt);
 
             done = true;
-            loadingIttr++;
         }
 
         public bool isReady()
         {
-            return done && loadingIttr >= FeedURL.Length;
+            return done && getFeedLength() >= FeedURL.Length;
         }
 
         // IVRCStringDownload[] -> TypeResolverException: Type referenced by 'VRCSDK3StringLoadingIVRCStringDownloadArray' could not be resolved. 
