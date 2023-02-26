@@ -42,13 +42,16 @@ namespace nekomimiStudio.feedReader
             }
         */
 
+        private string[] str;
         private bool strDone = true;
         private int strLoadIttr = 0;
+        private int parseIttr = 0;
         private bool done = false;
 
         public void Start()
         {
             res = new string[FeedURL.Length][][][];
+            str = new string[FeedURL.Length];
             udonXml = this.GetComponentInChildren<UdonXML>();
         }
 
@@ -60,12 +63,17 @@ namespace nekomimiStudio.feedReader
                 done = false;
                 VRCStringDownloader.LoadUrl(FeedURL[strLoadIttr], (VRC.Udon.Common.Interfaces.IUdonEventReceiver)this);
             }
+            if (parseIttr < FeedURL.Length && str[parseIttr] != null && str[parseIttr] != "")
+            {
+                udonXml.LoadXmlCallback(str[parseIttr], this, this.GetInstanceID() + "_" + parseIttr);
+                str[parseIttr] = "";
+            }
         }
 
         public override void OnStringLoadSuccess(IVRCStringDownload result)
         {
             Debug.Log(result.Result);
-            udonXml.LoadXmlCallback(result.Result, this, this.GetInstanceID() + "_" + strLoadIttr);
+            str[strLoadIttr] = result.Result;
             strLoadIttr++;
             strDone = true;
         }
@@ -84,6 +92,7 @@ namespace nekomimiStudio.feedReader
         public override void OnUdonXMLParseEnd(object[] data, string callbackId)
         {
             Debug.Log(callbackId);
+            parseIttr++;
             var id = callbackId.Split('_');
             var ittr = int.Parse(id[id.Length - 1]);
 
