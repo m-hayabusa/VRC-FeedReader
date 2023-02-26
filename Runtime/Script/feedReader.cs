@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UdonXMLParser;
 using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
@@ -277,16 +277,18 @@ namespace nekomimiStudio.feedReader
 
         public int getFeedEntryLength(int feedNum)
         {
-            if (res == null || res.Length <= feedNum || res[feedNum] == null) return 0;
+            if (res == null || res.Length < feedNum || res[feedNum] == null) return 0;
             return res[feedNum][1].Length;
         }
         public string getFeedEntryItem(int feedNum, int item, feedEntry entry)
         {
+            if (res.Length < feedNum || res[feedNum] == null || res[feedNum][1] == null || res[feedNum][1].Length < item || res[feedNum][1].Length < item) return null;
             return res[feedNum][1][item][(int)entry];
         }
 
         public string getFeedHeaderItem(int feedNum, feedHeader entry)
         {
+            if (res.Length < feedNum || res[feedNum] == null || res[feedNum][0] == null) return null;
             return res[feedNum][0][(int)entry][0];
         }
     }
