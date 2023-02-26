@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UdonXMLParser;
 using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
@@ -242,6 +242,16 @@ namespace nekomimiStudio.feedReader
         public int getFeedLength()
         {
             return res.Length;
+        }
+
+        public int getTotalEntryCount()
+        {
+            int length = 0;
+            for (int i = 0; i < getFeedLength(); i++)
+            {
+                length += getFeedEntryLength(i);
+            }
+            return length;
         }
 
         public int getFeedEntryLength(int feedNum)
