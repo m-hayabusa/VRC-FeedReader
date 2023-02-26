@@ -260,8 +260,6 @@ namespace nekomimiStudio.feedReader
         }
         public string getFeedEntryItem(int feedNum, int item, feedEntry entry)
         {
-            Debug.Log(res[feedNum][1].Length);
-            Debug.Log(item);
             return res[feedNum][1][item][(int)entry];
         }
 
