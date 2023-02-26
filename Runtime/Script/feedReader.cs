@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UdonXMLParser;
 using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
@@ -246,7 +246,7 @@ namespace nekomimiStudio.feedReader
 
         public bool isReady()
         {
-            return done && getFeedLength() >= FeedURL.Length;
+            return parseIttr >= FeedURL.Length;
         }
 
         // IVRCStringDownload[] -> TypeResolverException: Type referenced by 'VRCSDK3StringLoadingIVRCStringDownloadArray' could not be resolved. 
