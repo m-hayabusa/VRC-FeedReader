@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UdonXMLParser;
 using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
@@ -81,19 +81,27 @@ namespace nekomimiStudio.feedReader
             var id = callbackId.Split('_');
             var ittr = int.Parse(id[id.Length - 1]);
 
-            var content = udonXml.GetChildNode(data, 1);
+            bool found = false;
+            for (int i = 0; i < udonXml.GetChildNodesCount(data) && !found; i++)
+            {
+                var content = udonXml.GetChildNode(data, i);
             switch (udonXml.GetNodeName(content))
             {
                 case "rdf:RDF":
                     parseRSS1(ittr, content);
+                        found = true;
                     break;
                 case "rss":
                     parseRSS2(ittr, content);
+                        found = true;
                     break;
                 case "feed":
                     parseAtom(ittr, content);
+                        found = true;
                     break;
             }
+            }
+            if (!found) Debug.LogWarning("RSS / Atom start tag not found");
         }
 
         private string GetNodeValueByName(object data, string nodeName)
