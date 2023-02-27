@@ -51,6 +51,8 @@ namespace nekomimiStudio.feedReader
 
         private bool active = false;
 
+        private float parseProgressUdonXML = 0;
+
         public void Start()
         {
             udonXml = this.GetComponentInChildren<UdonXML>();
@@ -67,6 +69,8 @@ namespace nekomimiStudio.feedReader
             strLoadIttr = 0;
             parseIttr = 0;
             done = false;
+
+            parseProgressUdonXML = 0;
 
             active = true;
         }
@@ -103,6 +107,7 @@ namespace nekomimiStudio.feedReader
             errorlog[strLoadIttr] = result;
             strLoadIttr++;
             strDone = true;
+            parseProgressUdonXML = 0;
             parseIttr++;
             done = true;
             Debug.Log("ERR");
@@ -111,6 +116,7 @@ namespace nekomimiStudio.feedReader
         public override void OnUdonXMLParseEnd(object[] data, string callbackId)
         {
             Debug.Log(callbackId);
+            parseProgressUdonXML = 0;
             parseIttr++;
             var id = callbackId.Split('_');
             var ittr = int.Parse(id[id.Length - 1]);
@@ -136,6 +142,11 @@ namespace nekomimiStudio.feedReader
                 }
             }
             if (!found) Debug.LogWarning("RSS / Atom start tag not found");
+        }
+
+        public override void OnUdonXMLIteration(int processing, int total)
+        {
+            parseProgressUdonXML = processing / (float)total;
         }
 
         private string GetNodeValueByName(object data, string nodeName)
@@ -275,6 +286,11 @@ namespace nekomimiStudio.feedReader
         public bool isLoading()
         {
             return active;
+        }
+
+        public float GetProgress()
+        {
+            return (parseProgressUdonXML + parseIttr) / FeedURL.Length;
         }
 
         public bool isReady()
