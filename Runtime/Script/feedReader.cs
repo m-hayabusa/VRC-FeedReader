@@ -11,7 +11,7 @@ namespace nekomimiStudio.feedReader
         [SerializeField] bool loadOnStart = false;
         public VRCUrl[] FeedURL;
 
-        private object[] errorlog = new object[0];
+        private object[] errorlog;
 
         private string[][][][] res;
         /*
@@ -61,6 +61,7 @@ namespace nekomimiStudio.feedReader
         {
             res = new string[FeedURL.Length][][][];
             str = new string[FeedURL.Length];
+            errorlog = new object[FeedURL.Length];
 
             strDone = true;
             strLoadIttr = 0;
@@ -99,13 +100,12 @@ namespace nekomimiStudio.feedReader
 
         public override void OnStringLoadError(IVRCStringDownload result)
         {
-            var err = new object[errorlog.Length + 1];
-            System.Array.Copy(errorlog, err, errorlog.Length);
-            err[err.Length - 1] = result;
-            errorlog = err;
+            errorlog[strLoadIttr] = result;
             strLoadIttr++;
             strDone = true;
+            parseIttr++;
             done = true;
+            Debug.Log("ERR");
         }
 
         public override void OnUdonXMLParseEnd(object[] data, string callbackId)
@@ -278,10 +278,21 @@ namespace nekomimiStudio.feedReader
         {
             return errorlog;
         }
-        public IVRCStringDownload error()
+        public IVRCStringDownload error(int feedNum = -1)
         {
-            if (errorlog.Length == 0) return null;
-            return (IVRCStringDownload)errorlog[errorlog.Length - 1];
+            if (feedNum == -1)
+            {
+                for (int i = errorlog.Length - 1; i >= 0; i--)
+                {
+                    if (errorlog[i] != null)
+                        return (IVRCStringDownload)errorlog[i];
+                }
+                return null;
+            }
+
+            if (feedNum < errorlog.Length && errorlog[feedNum] != null)
+                return (IVRCStringDownload)errorlog[feedNum];
+            return null;
         }
         public int getFeedLength()
         {
