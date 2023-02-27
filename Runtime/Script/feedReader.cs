@@ -8,6 +8,7 @@ namespace nekomimiStudio.feedReader
     public class feedReader : UdonXML_Callback
     {
         private UdonXML udonXml;
+        [SerializeField] bool loadOnStart = false;
         public VRCUrl[] FeedURL;
 
         private object[] errorlog = new object[0];
@@ -48,25 +49,43 @@ namespace nekomimiStudio.feedReader
         private int parseIttr = 0;
         private bool done = false;
 
+        private bool active = false;
+
         public void Start()
+        {
+            udonXml = this.GetComponentInChildren<UdonXML>();
+            if (loadOnStart) Load();
+        }
+
+        public void Load()
         {
             res = new string[FeedURL.Length][][][];
             str = new string[FeedURL.Length];
-            udonXml = this.GetComponentInChildren<UdonXML>();
+
+            strDone = true;
+            strLoadIttr = 0;
+            parseIttr = 0;
+            done = false;
+
+            active = true;
         }
 
         public void Update()
         {
-            if (strDone && strLoadIttr < FeedURL.Length)
+            if (active)
             {
-                strDone = false;
-                done = false;
-                VRCStringDownloader.LoadUrl(FeedURL[strLoadIttr], (VRC.Udon.Common.Interfaces.IUdonEventReceiver)this);
-            }
-            if (parseIttr < FeedURL.Length && str[parseIttr] != null && str[parseIttr] != "")
-            {
-                udonXml.LoadXmlCallback(str[parseIttr], this, this.GetInstanceID() + "_" + parseIttr);
-                str[parseIttr] = "";
+                if (strDone && strLoadIttr < FeedURL.Length)
+                {
+                    strDone = false;
+                    done = false;
+                    VRCStringDownloader.LoadUrl(FeedURL[strLoadIttr], (VRC.Udon.Common.Interfaces.IUdonEventReceiver)this);
+                }
+                if (parseIttr < FeedURL.Length && str[parseIttr] != null && str[parseIttr] != "")
+                {
+                    udonXml.LoadXmlCallback(str[parseIttr], this, this.GetInstanceID() + "_" + parseIttr);
+                    str[parseIttr] = "";
+                }
+                if (isReady()) active = false;
             }
         }
 
@@ -218,7 +237,7 @@ namespace nekomimiStudio.feedReader
 
             var author = udonXml.GetChildNodeByName(contentRoot, "author");
             res[feedNum][0][(int)feedHeader.AuthorName] = new string[] { GetNodeValueByName(author, "name") };
-            res[feedNum][0][(int)feedHeader.AuthorUri] = new string[] { GetNodeValueByName(author, "name") };
+            res[feedNum][0][(int)feedHeader.AuthorUri] = new string[] { GetNodeValueByName(author, "uri") };
 
             string[][] entries = new string[udonXml.GetChildNodesCount(contentRoot)][];
 
@@ -242,6 +261,11 @@ namespace nekomimiStudio.feedReader
             System.Array.Copy(entries, res[feedNum][1], cnt);
 
             done = true;
+        }
+
+        public bool isLoading()
+        {
+            return active;
         }
 
         public bool isReady()
