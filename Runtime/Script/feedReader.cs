@@ -155,7 +155,9 @@ namespace nekomimiStudio.feedReader
             res[feedNum][0][(int)feedHeader.Title] = new string[] { GetNodeValueByName(headerRoot, "title") };
             res[feedNum][0][(int)feedHeader.SubTitle] = new string[] { GetNodeValueByName(headerRoot, "subtitle") };
             res[feedNum][0][(int)feedHeader.Summary] = new string[] { GetNodeValueByName(headerRoot, "description") };
+            res[feedNum][0][(int)feedHeader.Id] = new string[] { "" };
             res[feedNum][0][(int)feedHeader.Updated] = new string[] { GetNodeValueByName(headerRoot, "dc:date") };
+            res[feedNum][0][(int)feedHeader.Rights] = new string[] { GetNodeValueByName(headerRoot, "dc:rights") };
             res[feedNum][0][(int)feedHeader.Link] = new string[] { GetNodeValueByName(headerRoot, "link") };
             res[feedNum][0][(int)feedHeader.AuthorName] = new string[] { "" };
             res[feedNum][0][(int)feedHeader.AuthorUri] = new string[] { "" };
@@ -173,6 +175,7 @@ namespace nekomimiStudio.feedReader
                     entries[cnt][(int)feedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
                     entries[cnt][(int)feedEntry.Link] = GetNodeValueByName(entry, "link");
                     entries[cnt][(int)feedEntry.Summary] = GetNodeValueByName(entry, "description");
+                    entries[cnt][(int)feedEntry.Id] = "";
                     entries[cnt][(int)feedEntry.Updated] = GetNodeValueByName(entry, "dc:date");
                     cnt++;
                 }
@@ -194,7 +197,9 @@ namespace nekomimiStudio.feedReader
             res[feedNum][0][(int)feedHeader.Title] = new string[] { GetNodeValueByName(contentRoot, "title") };
             res[feedNum][0][(int)feedHeader.SubTitle] = new string[] { GetNodeValueByName(contentRoot, "subtitle") };
             res[feedNum][0][(int)feedHeader.Summary] = new string[] { GetNodeValueByName(contentRoot, "description") };
+            res[feedNum][0][(int)feedHeader.Id] = new string[] { "" };
             res[feedNum][0][(int)feedHeader.Updated] = new string[] { GetNodeValueByName(contentRoot, "lastBuildDate") };
+            res[feedNum][0][(int)feedHeader.Rights] = new string[] { GetNodeValueByName(contentRoot, "copyright") };
             res[feedNum][0][(int)feedHeader.Link] = new string[] { GetNodeValueByName(contentRoot, "link") };
 
             res[feedNum][0][(int)feedHeader.AuthorName] = new string[] { "" };
@@ -213,6 +218,7 @@ namespace nekomimiStudio.feedReader
                     entries[cnt][(int)feedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
                     entries[cnt][(int)feedEntry.Link] = GetNodeValueByName(entry, "link");
                     entries[cnt][(int)feedEntry.Summary] = GetNodeValueByName(entry, "description");
+                    entries[cnt][(int)feedEntry.Id] = GetNodeValueByName(entry, "guid");
                     entries[cnt][(int)feedEntry.Updated] = GetNodeValueByName(entry, "pubDate");
                     cnt++;
                 }
@@ -232,7 +238,9 @@ namespace nekomimiStudio.feedReader
             res[feedNum][0][(int)feedHeader.Title] = new string[] { GetNodeValueByName(contentRoot, "title") };
             res[feedNum][0][(int)feedHeader.SubTitle] = new string[] { GetNodeValueByName(contentRoot, "subtitle") };
             res[feedNum][0][(int)feedHeader.Summary] = new string[] { GetNodeValueByName(contentRoot, "summary") };
+            res[feedNum][0][(int)feedHeader.Id] = new string[] { GetNodeValueByName(contentRoot, "id") };
             res[feedNum][0][(int)feedHeader.Updated] = new string[] { GetNodeValueByName(contentRoot, "updated") };
+            res[feedNum][0][(int)feedHeader.Rights] = new string[] { GetNodeValueByName(contentRoot, "rights") };
             res[feedNum][0][(int)feedHeader.Link] = new string[] { GetNodeValueByName(contentRoot, "link") };
 
             var author = udonXml.GetChildNodeByName(contentRoot, "author");
@@ -252,6 +260,7 @@ namespace nekomimiStudio.feedReader
                     entries[cnt][(int)feedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
                     entries[cnt][(int)feedEntry.Link] = GetNodeValueByName(entry, "link");
                     entries[cnt][(int)feedEntry.Summary] = GetNodeValueByName(entry, "summary");
+                    entries[cnt][(int)feedEntry.Id] = GetNodeValueByName(entry, "id");
                     entries[cnt][(int)feedEntry.Updated] = GetNodeValueByName(entry, "updated");
                     cnt++;
                 }
