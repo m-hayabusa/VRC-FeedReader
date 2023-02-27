@@ -21,39 +21,47 @@ public class example : UdonSharpBehaviour
     [SerializeField] private feedReader feeds;
     private bool done = false;
 
+    public override void Interact()
+    {
+        done = false;
+        feeds.Load();
+    }
+
     void Update()
     {
-        if (!done)
+        if (!done && feeds != null)
         {
             if (feeds.isReady())
             {
+                Debug.Log($"entries: {feeds.getTotalEntryCount()}");
                 for (int i = 0; i < feeds.getFeedLength(); i++)
                 {
-                    Debug.Log(feeds.getFeedHeaderItem(i, feedHeader.Title));
-
-                    for (int j = 0; j < feeds.getFeedEntryLength(i); j++)
+                    if (feeds.errors()[i] != null)
                     {
-                        Debug.Log(feeds.getFeedEntryItem(i, j, feedEntry.Title));
-                        Debug.Log(feeds.getFeedEntryItem(i, j, feedEntry.Summary));
+                        var error = (VRC.SDK3.StringLoading.IVRCStringDownload)feeds.errors()[i];
+                        Debug.Log($"{error.Url.ToString()}: {error.ErrorCode.ToString()}: {error.Error}");
+                        if (error.Error.StartsWith("Not trusted url hit"))
+                            Debug.Log("Check Settings -> Comfort & safety -> Safety -> Allow Untrusted URLs");
+                    }
+                    else
+                    {
+                        Debug.Log(feeds.getFeedHeaderItem(i, feedHeader.Title));
+
+                        for (int j = 0; j < feeds.getFeedEntryLength(i); j++)
+                        {
+                            Debug.Log(feeds.getFeedEntryItem(i, j, feedEntry.Title));
+                            Debug.Log(feeds.getFeedEntryItem(i, j, feedEntry.Summary));
+                        }
                     }
                 }
                 done = true;
             }
-            else if (feeds.errors().Length > 0)
+            else if (feeds.isLoading())
             {
-                var error = feeds.error();
-                Debug.Log($"{error.Url.ToString()}: {error.ErrorCode.ToString()}: {error.Error}");
-                if (error.Error.StartsWith("Not trusted url hit"))
-                    Debug.Log("Check Settings -> Comfort & safety -> Safety -> Allow Untrusted URLs");
+                Debug.Log($"loading... {feeds.GetProgress()}");
             }
             /*
-                feeds.errors() is object[].
-                cast it to VRC.SDK3.StringLoading.IVRCStringDownload
-
-                feeds.error() is IVRCStringDownload (an latest one)
-            */
-            /*
-                feedHeader and feedEntry are written in ./Runtime/Script/feedReader.cs
+                feedHeader and feedEntry are written in ./Runtime/Script/feedReader.cs (scroll to end of the file)
             */
         }
     }
