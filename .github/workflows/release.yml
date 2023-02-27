@@ -9,7 +9,30 @@ env:
   packageName: "studio.nekomimi.feedreader"
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      run: ${{ steps.tag.outputs.tag != steps.version.outputs.prop }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: "get latest tag"
+        id: tag
+        run: echo tag=$(git describe --tags --abbrev=0) >> $GITHUB_OUTPUT
+
+      - name: get version
+        id: version
+        uses: notiz-dev/github-action-json-property@7c8cf5cc36eb85d8d287a8086a39dac59628eb31
+        with:
+          path: "package.json"
+          prop_path: "version"
+
   build:
+    needs: [check]
+    if: ${{ needs.check.outputs.run == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
