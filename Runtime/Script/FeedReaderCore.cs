@@ -3,9 +3,9 @@ using UdonXMLParser;
 using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
 
-namespace nekomimiStudio.feedReader
+namespace nekomimiStudio.FeedReader
 {
-    public class feedReader : UdonXML_Callback
+    public class FeedReaderCore : UdonXML_Callback
     {
         private UdonXML udonXml;
         [SerializeField] bool loadOnStart = false;
@@ -163,15 +163,15 @@ namespace nekomimiStudio.feedReader
             res[feedNum] = new string[2][][];
             res[feedNum][0] = new string[10][];
 
-            res[feedNum][0][(int)feedHeader.Title] = new string[] { GetNodeValueByName(headerRoot, "title") };
-            res[feedNum][0][(int)feedHeader.SubTitle] = new string[] { GetNodeValueByName(headerRoot, "subtitle") };
-            res[feedNum][0][(int)feedHeader.Summary] = new string[] { GetNodeValueByName(headerRoot, "description") };
-            res[feedNum][0][(int)feedHeader.Id] = new string[] { "" };
-            res[feedNum][0][(int)feedHeader.Updated] = new string[] { GetNodeValueByName(headerRoot, "dc:date") };
-            res[feedNum][0][(int)feedHeader.Rights] = new string[] { GetNodeValueByName(headerRoot, "dc:rights") };
-            res[feedNum][0][(int)feedHeader.Link] = new string[] { GetNodeValueByName(headerRoot, "link") };
-            res[feedNum][0][(int)feedHeader.AuthorName] = new string[] { "" };
-            res[feedNum][0][(int)feedHeader.AuthorUri] = new string[] { "" };
+            res[feedNum][0][(int)FeedHeader.Title] = new string[] { GetNodeValueByName(headerRoot, "title") };
+            res[feedNum][0][(int)FeedHeader.SubTitle] = new string[] { GetNodeValueByName(headerRoot, "subtitle") };
+            res[feedNum][0][(int)FeedHeader.Summary] = new string[] { GetNodeValueByName(headerRoot, "description") };
+            res[feedNum][0][(int)FeedHeader.Id] = new string[] { "" };
+            res[feedNum][0][(int)FeedHeader.Updated] = new string[] { GetNodeValueByName(headerRoot, "dc:date") };
+            res[feedNum][0][(int)FeedHeader.Rights] = new string[] { GetNodeValueByName(headerRoot, "dc:rights") };
+            res[feedNum][0][(int)FeedHeader.Link] = new string[] { GetNodeValueByName(headerRoot, "link") };
+            res[feedNum][0][(int)FeedHeader.AuthorName] = new string[] { "" };
+            res[feedNum][0][(int)FeedHeader.AuthorUri] = new string[] { "" };
 
             string[][] entries = new string[udonXml.GetChildNodesCount(contentRoot)][];
 
@@ -182,12 +182,12 @@ namespace nekomimiStudio.feedReader
                 if (udonXml.GetNodeName(entry) == "item")
                 {
                     entries[cnt] = new string[6];
-                    entries[cnt][(int)feedEntry.Title] = GetNodeValueByName(entry, "title");
-                    entries[cnt][(int)feedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
-                    entries[cnt][(int)feedEntry.Link] = GetNodeValueByName(entry, "link");
-                    entries[cnt][(int)feedEntry.Summary] = GetNodeValueByName(entry, "description");
-                    entries[cnt][(int)feedEntry.Id] = "";
-                    entries[cnt][(int)feedEntry.Updated] = GetNodeValueByName(entry, "dc:date");
+                    entries[cnt][(int)FeedEntry.Title] = GetNodeValueByName(entry, "title");
+                    entries[cnt][(int)FeedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
+                    entries[cnt][(int)FeedEntry.Link] = GetNodeValueByName(entry, "link");
+                    entries[cnt][(int)FeedEntry.Summary] = GetNodeValueByName(entry, "description");
+                    entries[cnt][(int)FeedEntry.Id] = "";
+                    entries[cnt][(int)FeedEntry.Updated] = GetNodeValueByName(entry, "dc:date");
                     cnt++;
                 }
             }
@@ -205,16 +205,16 @@ namespace nekomimiStudio.feedReader
             res[feedNum] = new string[2][][];
             res[feedNum][0] = new string[10][];
 
-            res[feedNum][0][(int)feedHeader.Title] = new string[] { GetNodeValueByName(contentRoot, "title") };
-            res[feedNum][0][(int)feedHeader.SubTitle] = new string[] { GetNodeValueByName(contentRoot, "subtitle") };
-            res[feedNum][0][(int)feedHeader.Summary] = new string[] { GetNodeValueByName(contentRoot, "description") };
-            res[feedNum][0][(int)feedHeader.Id] = new string[] { "" };
-            res[feedNum][0][(int)feedHeader.Updated] = new string[] { GetNodeValueByName(contentRoot, "lastBuildDate") };
-            res[feedNum][0][(int)feedHeader.Rights] = new string[] { GetNodeValueByName(contentRoot, "copyright") };
-            res[feedNum][0][(int)feedHeader.Link] = new string[] { GetNodeValueByName(contentRoot, "link") };
+            res[feedNum][0][(int)FeedHeader.Title] = new string[] { GetNodeValueByName(contentRoot, "title") };
+            res[feedNum][0][(int)FeedHeader.SubTitle] = new string[] { GetNodeValueByName(contentRoot, "subtitle") };
+            res[feedNum][0][(int)FeedHeader.Summary] = new string[] { GetNodeValueByName(contentRoot, "description") };
+            res[feedNum][0][(int)FeedHeader.Id] = new string[] { "" };
+            res[feedNum][0][(int)FeedHeader.Updated] = new string[] { GetNodeValueByName(contentRoot, "lastBuildDate") };
+            res[feedNum][0][(int)FeedHeader.Rights] = new string[] { GetNodeValueByName(contentRoot, "copyright") };
+            res[feedNum][0][(int)FeedHeader.Link] = new string[] { GetNodeValueByName(contentRoot, "link") };
 
-            res[feedNum][0][(int)feedHeader.AuthorName] = new string[] { "" };
-            res[feedNum][0][(int)feedHeader.AuthorUri] = new string[] { "" };
+            res[feedNum][0][(int)FeedHeader.AuthorName] = new string[] { "" };
+            res[feedNum][0][(int)FeedHeader.AuthorUri] = new string[] { "" };
 
             string[][] entries = new string[udonXml.GetChildNodesCount(contentRoot)][];
 
@@ -225,12 +225,12 @@ namespace nekomimiStudio.feedReader
                 if (udonXml.GetNodeName(entry) == "item")
                 {
                     entries[cnt] = new string[6];
-                    entries[cnt][(int)feedEntry.Title] = GetNodeValueByName(entry, "title");
-                    entries[cnt][(int)feedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
-                    entries[cnt][(int)feedEntry.Link] = GetNodeValueByName(entry, "link");
-                    entries[cnt][(int)feedEntry.Summary] = GetNodeValueByName(entry, "description");
-                    entries[cnt][(int)feedEntry.Id] = GetNodeValueByName(entry, "guid");
-                    entries[cnt][(int)feedEntry.Updated] = GetNodeValueByName(entry, "pubDate");
+                    entries[cnt][(int)FeedEntry.Title] = GetNodeValueByName(entry, "title");
+                    entries[cnt][(int)FeedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
+                    entries[cnt][(int)FeedEntry.Link] = GetNodeValueByName(entry, "link");
+                    entries[cnt][(int)FeedEntry.Summary] = GetNodeValueByName(entry, "description");
+                    entries[cnt][(int)FeedEntry.Id] = GetNodeValueByName(entry, "guid");
+                    entries[cnt][(int)FeedEntry.Updated] = GetNodeValueByName(entry, "pubDate");
                     cnt++;
                 }
             }
@@ -246,17 +246,17 @@ namespace nekomimiStudio.feedReader
             res[feedNum] = new string[2][][];
             res[feedNum][0] = new string[10][];
 
-            res[feedNum][0][(int)feedHeader.Title] = new string[] { GetNodeValueByName(contentRoot, "title") };
-            res[feedNum][0][(int)feedHeader.SubTitle] = new string[] { GetNodeValueByName(contentRoot, "subtitle") };
-            res[feedNum][0][(int)feedHeader.Summary] = new string[] { GetNodeValueByName(contentRoot, "summary") };
-            res[feedNum][0][(int)feedHeader.Id] = new string[] { GetNodeValueByName(contentRoot, "id") };
-            res[feedNum][0][(int)feedHeader.Updated] = new string[] { GetNodeValueByName(contentRoot, "updated") };
-            res[feedNum][0][(int)feedHeader.Rights] = new string[] { GetNodeValueByName(contentRoot, "rights") };
-            res[feedNum][0][(int)feedHeader.Link] = new string[] { GetNodeValueByName(contentRoot, "link") };
+            res[feedNum][0][(int)FeedHeader.Title] = new string[] { GetNodeValueByName(contentRoot, "title") };
+            res[feedNum][0][(int)FeedHeader.SubTitle] = new string[] { GetNodeValueByName(contentRoot, "subtitle") };
+            res[feedNum][0][(int)FeedHeader.Summary] = new string[] { GetNodeValueByName(contentRoot, "summary") };
+            res[feedNum][0][(int)FeedHeader.Id] = new string[] { GetNodeValueByName(contentRoot, "id") };
+            res[feedNum][0][(int)FeedHeader.Updated] = new string[] { GetNodeValueByName(contentRoot, "updated") };
+            res[feedNum][0][(int)FeedHeader.Rights] = new string[] { GetNodeValueByName(contentRoot, "rights") };
+            res[feedNum][0][(int)FeedHeader.Link] = new string[] { GetNodeValueByName(contentRoot, "link") };
 
             var author = udonXml.GetChildNodeByName(contentRoot, "author");
-            res[feedNum][0][(int)feedHeader.AuthorName] = new string[] { GetNodeValueByName(author, "name") };
-            res[feedNum][0][(int)feedHeader.AuthorUri] = new string[] { GetNodeValueByName(author, "uri") };
+            res[feedNum][0][(int)FeedHeader.AuthorName] = new string[] { GetNodeValueByName(author, "name") };
+            res[feedNum][0][(int)FeedHeader.AuthorUri] = new string[] { GetNodeValueByName(author, "uri") };
 
             string[][] entries = new string[udonXml.GetChildNodesCount(contentRoot)][];
 
@@ -267,12 +267,12 @@ namespace nekomimiStudio.feedReader
                 if (udonXml.GetNodeName(entry) == "entry")
                 {
                     entries[cnt] = new string[6];
-                    entries[cnt][(int)feedEntry.Title] = GetNodeValueByName(entry, "title");
-                    entries[cnt][(int)feedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
-                    entries[cnt][(int)feedEntry.Link] = GetNodeValueByName(entry, "link");
-                    entries[cnt][(int)feedEntry.Summary] = GetNodeValueByName(entry, "summary");
-                    entries[cnt][(int)feedEntry.Id] = GetNodeValueByName(entry, "id");
-                    entries[cnt][(int)feedEntry.Updated] = GetNodeValueByName(entry, "updated");
+                    entries[cnt][(int)FeedEntry.Title] = GetNodeValueByName(entry, "title");
+                    entries[cnt][(int)FeedEntry.SubTitle] = GetNodeValueByName(entry, "subtitle");
+                    entries[cnt][(int)FeedEntry.Link] = GetNodeValueByName(entry, "link");
+                    entries[cnt][(int)FeedEntry.Summary] = GetNodeValueByName(entry, "summary");
+                    entries[cnt][(int)FeedEntry.Id] = GetNodeValueByName(entry, "id");
+                    entries[cnt][(int)FeedEntry.Updated] = GetNodeValueByName(entry, "updated");
                     cnt++;
                 }
             }
@@ -340,24 +340,24 @@ namespace nekomimiStudio.feedReader
             if (res == null || res.Length < feedNum || res[feedNum] == null) return 0;
             return res[feedNum][1].Length;
         }
-        public string getFeedEntryItem(int feedNum, int item, feedEntry entry)
+        public string getFeedEntryItem(int feedNum, int item, FeedEntry entry)
         {
             if (res.Length < feedNum || res[feedNum] == null || res[feedNum][1] == null || res[feedNum][1].Length < item || res[feedNum][1].Length < item) return null;
             return res[feedNum][1][item][(int)entry];
         }
 
-        public string getFeedHeaderItem(int feedNum, feedHeader entry)
+        public string getFeedHeaderItem(int feedNum, FeedHeader entry)
         {
             if (res.Length < feedNum || res[feedNum] == null || res[feedNum][0] == null) return null;
             return res[feedNum][0][(int)entry][0];
         }
     }
 
-    public enum feedHeader
+    public enum FeedHeader
     {
         Title, SubTitle, Summary, Id, Link, Updated, Rights, Entries, AuthorName, AuthorUri
     }
-    public enum feedEntry
+    public enum FeedEntry
     {
         Title, SubTitle, Summary, Id, Link, Updated
     }

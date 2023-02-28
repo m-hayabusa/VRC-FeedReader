@@ -14,11 +14,11 @@ RSS / Atom feed を読み込みます。
 ```csharp
 using UnityEngine;
 using UdonSharp;
-using nekomimiStudio.feedReader;
+using nekomimiStudio.FeedReader;
 
 public class example : UdonSharpBehaviour
 {
-    [SerializeField] private feedReader feeds;
+    [SerializeField] private FeedReaderCore feeds;
     private bool done = false;
 
     public override void Interact()
@@ -45,12 +45,12 @@ public class example : UdonSharpBehaviour
                     }
                     else
                     {
-                        Debug.Log(feeds.getFeedHeaderItem(i, feedHeader.Title));
+                        Debug.Log(feeds.getFeedHeaderItem(i, FeedHeader.Title));
 
                         for (int j = 0; j < feeds.getFeedEntryLength(i); j++)
                         {
-                            Debug.Log(feeds.getFeedEntryItem(i, j, feedEntry.Title));
-                            Debug.Log(feeds.getFeedEntryItem(i, j, feedEntry.Summary));
+                            Debug.Log(feeds.getFeedEntryItem(i, j, FeedEntry.Title));
+                            Debug.Log(feeds.getFeedEntryItem(i, j, FeedEntry.Summary));
                         }
                     }
                 }
@@ -61,7 +61,7 @@ public class example : UdonSharpBehaviour
                 Debug.Log($"loading... {feeds.GetProgress()}");
             }
             /*
-                feedHeader and feedEntry are written in ./Runtime/Script/feedReader.cs (scroll to end of the file)
+                FeedHeader and FeedEntry are written in ./Runtime/Script/feedReader.cs (scroll to end of the file)
             */
         }
     }
