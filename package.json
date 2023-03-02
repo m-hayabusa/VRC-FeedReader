@@ -1,7 +1,7 @@
 {
   "name": "studio.nekomimi.feedreader",
   "displayName": "nS feedReader",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "parse RSS / Atom Feed",
   "repository": {
     "type": "git",
@@ -9,7 +9,7 @@
   },
   "gitDependencies": {},
   "vpmDependencies": {
-    "com.vrchat.udonsharp": "1.1.6",
+    "com.vrchat.udonsharp": "1.1.7",
     "studio.nekomimi.udonxml": "0.2.2"
   },
   "license": "MIT",
