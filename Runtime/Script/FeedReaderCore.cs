@@ -96,7 +96,6 @@ namespace nekomimiStudio.FeedReader
 
         public override void OnStringLoadSuccess(IVRCStringDownload result)
         {
-            Debug.Log(result.Result);
             str[strLoadIttr] = result.Result;
             strLoadIttr++;
             strDone = true;
@@ -110,12 +109,11 @@ namespace nekomimiStudio.FeedReader
             parseProgressUdonXML = 0;
             parseIttr++;
             done = true;
-            Debug.Log("ERR");
+            Debug.Log("FeedReader: ERR: " + strLoadIttr);
         }
 
         public override void OnUdonXMLParseEnd(object[] data, string callbackId)
         {
-            Debug.Log(callbackId);
             parseProgressUdonXML = 0;
             parseIttr++;
             var id = callbackId.Split('_');
