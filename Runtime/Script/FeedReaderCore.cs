@@ -47,7 +47,6 @@ namespace nekomimiStudio.FeedReader
         private bool strDone = true;
         private int strLoadIttr = 0;
         private int parseIttr = 0;
-        private bool done = false;
 
         private bool active = false;
 
@@ -68,7 +67,6 @@ namespace nekomimiStudio.FeedReader
             strDone = true;
             strLoadIttr = 0;
             parseIttr = 0;
-            done = false;
 
             parseProgressUdonXML = 0;
 
@@ -82,7 +80,6 @@ namespace nekomimiStudio.FeedReader
                 if (strDone && strLoadIttr < FeedURL.Length)
                 {
                     strDone = false;
-                    done = false;
                     VRCStringDownloader.LoadUrl(FeedURL[strLoadIttr], (VRC.Udon.Common.Interfaces.IUdonEventReceiver)this);
                 }
                 if (parseIttr < FeedURL.Length && str[parseIttr] != null && str[parseIttr] != "")
@@ -108,7 +105,6 @@ namespace nekomimiStudio.FeedReader
             strDone = true;
             parseProgressUdonXML = 0;
             parseIttr++;
-            done = true;
             Debug.Log("FeedReader: ERR: " + strLoadIttr);
         }
 
@@ -192,8 +188,6 @@ namespace nekomimiStudio.FeedReader
             res[feedNum][1] = new string[cnt][];
 
             System.Array.Copy(entries, res[feedNum][1], cnt);
-
-            done = true;
         }
 
         private void parseRSS2(int feedNum, object contentRoot)
@@ -235,8 +229,6 @@ namespace nekomimiStudio.FeedReader
             res[feedNum][1] = new string[cnt][];
 
             System.Array.Copy(entries, res[feedNum][1], cnt);
-
-            done = true;
         }
 
         private void parseAtom(int feedNum, object contentRoot)
@@ -277,8 +269,6 @@ namespace nekomimiStudio.FeedReader
             res[feedNum][1] = new string[cnt][];
 
             System.Array.Copy(entries, res[feedNum][1], cnt);
-
-            done = true;
         }
 
         public bool isLoading()
