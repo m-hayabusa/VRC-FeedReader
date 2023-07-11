@@ -6,7 +6,7 @@
         "VRC.Udon",
         "UdonSharp.Runtime",
         "VRC.Udon.Serialization.OdinSerializer",
-        "studio.nekomimi.udonxml"
+        "studio.nekomimi.parser.xml"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,13 +1,14 @@
-﻿using UnityEngine;
-using UdonXMLParser;
+using UnityEngine;
+using nekomimiStudio.parser.xml;
 using VRC.SDKBase;
 using VRC.SDK3.StringLoading;
+using VRC.SDK3.Data;
 
 namespace nekomimiStudio.FeedReader
 {
-    public class FeedReaderCore : UdonXML_Callback
+    public class FeedReaderCore : XMLParser_Callback
     {
-        private UdonXML udonXml;
+        private XMLParser parser;
         [SerializeField] bool loadOnStart = false;
         public VRCUrl[] FeedURL;
 
@@ -50,11 +51,11 @@ namespace nekomimiStudio.FeedReader
 
         private bool active = false;
 
-        private float parseProgressUdonXML = 0;
+        private float parseProgress = 0;
 
         public void Start()
         {
-            udonXml = this.GetComponentInChildren<UdonXML>();
+            parser = this.GetComponentInChildren<XMLParser>();
             if (loadOnStart) Load();
         }
 
@@ -68,7 +69,7 @@ namespace nekomimiStudio.FeedReader
             strLoadIttr = 0;
             parseIttr = 0;
 
-            parseProgressUdonXML = 0;
+            parseProgress = 0;
 
             active = true;
         }
@@ -84,7 +85,7 @@ namespace nekomimiStudio.FeedReader
                 }
                 if (parseIttr < FeedURL.Length && str[parseIttr] != null && str[parseIttr] != "")
                 {
-                    udonXml.LoadXmlCallback(str[parseIttr], this, this.GetInstanceID() + "_" + parseIttr);
+                    parser.ParseWithCallback(str[parseIttr], this, this.GetInstanceID() + "_" + parseIttr);
                     str[parseIttr] = "";
                 }
                 if (isReady()) active = false;
@@ -103,34 +104,36 @@ namespace nekomimiStudio.FeedReader
             errorlog[strLoadIttr] = result;
             strLoadIttr++;
             strDone = true;
-            parseProgressUdonXML = 0;
+            parseProgress = 0;
             parseIttr++;
             Debug.Log("FeedReader: ERR: " + strLoadIttr);
         }
 
-        public override void OnUdonXMLParseEnd(object[] data, string callbackId)
+        public override void OnXMLParseEnd(DataDictionary result, string callbackId)
         {
-            parseProgressUdonXML = 0;
+            parseProgress = 0;
             parseIttr++;
             var id = callbackId.Split('_');
             var ittr = int.Parse(id[id.Length - 1]);
 
+            var root = XMLParser.GetChildNodes(result);
+
             bool found = false;
-            for (int i = 0; i < udonXml.GetChildNodesCount(data) && !found; i++)
+            for (int i = 0; i < root.Count && !found; i++)
             {
-                var content = udonXml.GetChildNode(data, i);
-                switch (udonXml.GetNodeName(content))
+                var elem = (DataDictionary)root[i];
+                switch (XMLParser.GetNodeName(elem))
                 {
                     case "rdf:RDF":
-                        parseRSS1(ittr, content);
+                        parseRSS1(ittr, elem);
                         found = true;
                         break;
                     case "rss":
-                        parseRSS2(ittr, content);
+                        parseRSS2(ittr, elem);
                         found = true;
                         break;
                     case "feed":
-                        parseAtom(ittr, content);
+                        parseAtom(ittr, elem);
                         found = true;
                         break;
                 }
@@ -138,21 +141,18 @@ namespace nekomimiStudio.FeedReader
             if (!found) Debug.LogWarning("RSS / Atom start tag not found");
         }
 
-        public override void OnUdonXMLIteration(int processing, int total)
+        public override void OnXMLParseIteration(int processing, int total)
         {
-            parseProgressUdonXML = processing / (float)total;
+            parseProgress = processing / (float)total;
         }
 
-        private string GetNodeValueByName(object data, string nodeName)
+        private string GetNodeValueByName(DataDictionary data, string nodeName)
         {
-            if (!udonXml.HasChildNodes(data)) return "";
-            var node = udonXml.GetChildNodeByName(data, nodeName);
-            if (node == null) return "";
-            return udonXml.GetNodeValue(node);
+            return XMLParser.GetText(XMLParser.GetNodeByPath(data, "/" + nodeName));
         }
-        private void parseRSS1(int feedNum, object contentRoot)
+        private void parseRSS1(int feedNum, DataDictionary contentRoot)
         {
-            var headerRoot = udonXml.GetChildNodeByName(contentRoot, "channel");
+            var headerRoot = XMLParser.GetNodeByPath(contentRoot, "/channel");
 
             res[feedNum] = new string[2][][];
             res[feedNum][0] = new string[10][];
@@ -167,13 +167,14 @@ namespace nekomimiStudio.FeedReader
             res[feedNum][0][(int)FeedHeader.AuthorName] = new string[] { "" };
             res[feedNum][0][(int)FeedHeader.AuthorUri] = new string[] { "" };
 
-            string[][] entries = new string[udonXml.GetChildNodesCount(contentRoot)][];
+            var items = XMLParser.GetChildNodes(contentRoot);
+            string[][] entries = new string[items.Count][];
 
             int cnt = 0;
-            for (int i = 0; i < udonXml.GetChildNodesCount(contentRoot); i++)
+            for (int i = 0; i < items.Count; i++)
             {
-                var entry = udonXml.GetChildNode(contentRoot, i);
-                if (udonXml.GetNodeName(entry) == "item")
+                var entry = (DataDictionary)items[i];
+                if (XMLParser.GetNodeName(entry) == "item")
                 {
                     entries[cnt] = new string[6];
                     entries[cnt][(int)FeedEntry.Title] = GetNodeValueByName(entry, "title");
@@ -190,9 +191,9 @@ namespace nekomimiStudio.FeedReader
             System.Array.Copy(entries, res[feedNum][1], cnt);
         }
 
-        private void parseRSS2(int feedNum, object contentRoot)
+        private void parseRSS2(int feedNum, DataDictionary contentRoot)
         {
-            contentRoot = udonXml.GetChildNodeByName(contentRoot, "channel");
+            contentRoot = XMLParser.GetNodeByPath(contentRoot, "/channel");
 
             res[feedNum] = new string[2][][];
             res[feedNum][0] = new string[10][];
@@ -208,13 +209,14 @@ namespace nekomimiStudio.FeedReader
             res[feedNum][0][(int)FeedHeader.AuthorName] = new string[] { "" };
             res[feedNum][0][(int)FeedHeader.AuthorUri] = new string[] { "" };
 
-            string[][] entries = new string[udonXml.GetChildNodesCount(contentRoot)][];
+            var items = XMLParser.GetChildNodes(contentRoot);
+            string[][] entries = new string[items.Count][];
 
             int cnt = 0;
-            for (int i = 0; i < udonXml.GetChildNodesCount(contentRoot); i++)
+            for (int i = 0; i < items.Count; i++)
             {
-                var entry = udonXml.GetChildNode(contentRoot, i);
-                if (udonXml.GetNodeName(entry) == "item")
+                var entry = (DataDictionary)items[i];
+                if (XMLParser.GetNodeName(entry) == "item")
                 {
                     entries[cnt] = new string[6];
                     entries[cnt][(int)FeedEntry.Title] = GetNodeValueByName(entry, "title");
@@ -231,7 +233,7 @@ namespace nekomimiStudio.FeedReader
             System.Array.Copy(entries, res[feedNum][1], cnt);
         }
 
-        private void parseAtom(int feedNum, object contentRoot)
+        private void parseAtom(int feedNum, DataDictionary contentRoot)
         {
             res[feedNum] = new string[2][][];
             res[feedNum][0] = new string[10][];
@@ -244,17 +246,18 @@ namespace nekomimiStudio.FeedReader
             res[feedNum][0][(int)FeedHeader.Rights] = new string[] { GetNodeValueByName(contentRoot, "rights") };
             res[feedNum][0][(int)FeedHeader.Link] = new string[] { GetNodeValueByName(contentRoot, "link") };
 
-            var author = udonXml.GetChildNodeByName(contentRoot, "author");
+            var author = XMLParser.GetNodeByPath(contentRoot, "/author");
             res[feedNum][0][(int)FeedHeader.AuthorName] = new string[] { GetNodeValueByName(author, "name") };
             res[feedNum][0][(int)FeedHeader.AuthorUri] = new string[] { GetNodeValueByName(author, "uri") };
 
-            string[][] entries = new string[udonXml.GetChildNodesCount(contentRoot)][];
+            var items = XMLParser.GetChildNodes(contentRoot);
+            string[][] entries = new string[items.Count][];
 
             int cnt = 0;
-            for (int i = 0; i < udonXml.GetChildNodesCount(contentRoot); i++)
+            for (int i = 0; i < items.Count; i++)
             {
-                var entry = udonXml.GetChildNode(contentRoot, i);
-                if (udonXml.GetNodeName(entry) == "entry")
+                var entry = (DataDictionary)items[i];
+                if (XMLParser.GetNodeName(entry) == "entry")
                 {
                     entries[cnt] = new string[6];
                     entries[cnt][(int)FeedEntry.Title] = GetNodeValueByName(entry, "title");
@@ -278,7 +281,7 @@ namespace nekomimiStudio.FeedReader
 
         public float GetProgress()
         {
-            return (parseProgressUdonXML + parseIttr) / FeedURL.Length;
+            return (parseProgress + parseIttr) / FeedURL.Length;
         }
 
         public bool isReady()
