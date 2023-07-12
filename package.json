@@ -1,7 +1,7 @@
 {
   "name": "studio.nekomimi.feedreader",
   "displayName": "nS feedReader",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "parse RSS / Atom Feed",
   "repository": {
     "type": "git",
