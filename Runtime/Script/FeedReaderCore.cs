@@ -85,7 +85,7 @@ namespace nekomimiStudio.FeedReader
                 }
                 if (parseIttr < FeedURL.Length && str[parseIttr] != null && str[parseIttr] != "")
                 {
-                    parser.ParseWithCallback(str[parseIttr], this, this.GetInstanceID() + "_" + parseIttr);
+                    parser.ParseAsync(str[parseIttr], this, this.GetInstanceID() + "_" + parseIttr);
                     str[parseIttr] = "";
                 }
                 if (isReady()) active = false;
@@ -141,7 +141,7 @@ namespace nekomimiStudio.FeedReader
             if (!found) Debug.LogWarning("RSS / Atom start tag not found");
         }
 
-        public override void OnXMLParseIteration(int processing, int total)
+        public override void OnXMLParseIteration(int processing, int total, string callbackId)
         {
             parseProgress = processing / (float)total;
         }
