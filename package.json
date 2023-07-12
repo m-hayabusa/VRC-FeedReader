@@ -12,7 +12,7 @@
     "com.vrchat.udonsharp": "~1.1.7",
     "studio.nekomimi.parser.xml": "~0.1.0"
   },
-  "license": "MIT",
+  "license": "BSD 1-Clause",
   "legacyFolders": {},
   "legacyFiles": {},
   "author": {
